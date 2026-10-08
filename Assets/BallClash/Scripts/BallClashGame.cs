@@ -24,7 +24,7 @@ namespace BallClash
         float elapsed, botDecision, botSkillClock, shake;
         bool aiming, muted, shakeEnabled = true;
         Vector2 aim;
-        Texture2D pixel;
+        Texture2D pixel, disc;
         GUIStyle title, heading, normal, small, center, button, selectedButton, hud;
 
         enum Phase { Menu, Aim, Fight, End }
@@ -42,6 +42,13 @@ namespace BallClash
         {
             Application.targetFrameRate = 60;
             pixel = new Texture2D(1, 1); pixel.SetPixel(0, 0, Color.white); pixel.Apply();
+            disc = new Texture2D(64, 64, TextureFormat.RGBA32, false);
+            for (int y = 0; y < 64; y++) for (int x = 0; x < 64; x++)
+            {
+                float d = Vector2.Distance(new Vector2(x + .5f, y + .5f), new Vector2(32, 32));
+                disc.SetPixel(x, y, new Color(1, 1, 1, Mathf.Clamp01((32f - d) * 2f)));
+            }
+            disc.Apply();
             Add("fire", Role.Fighter, "🔥", "FIRE", "METEOR CRASH", "#ef4444", "Boost kecepatan untuk benturan maksimum.", 1.25f, 1f, .94f, Ability.Blast);
             Add("ice", Role.Magic, "❄️", "ICE", "FREEZE", "#38bdf8", "Tiga serangan area yang memperlambat.", .92f, .97f, 1.14f, Ability.Freeze);
             Add("thunder", Role.Fighter, "⚡", "THUNDER", "LIGHTNING DASH", "#facc15", "Dash ekstrem menuju lawan.", 1.08f, 1.18f, .9f, Ability.Dash);
@@ -119,7 +126,7 @@ namespace BallClash
         void Burst(Vector2 p,Color c,int count){for(int i=0;i<count;i++)particles.Add(new Particle{P=p,V=UnityEngine.Random.insideUnitCircle*3,C=c,Life=.5f,Size=3});}
         void Panel(Rect r,string c){GUI.DrawTexture(r,Tex(c));}
         void Bar(Rect r,float v,Color c){GUI.DrawTexture(r,Tex("#1a2338"));GUI.DrawTexture(new Rect(r.x,r.y,r.width*Mathf.Clamp01(v/100),r.height),Tex("#"+ColorUtility.ToHtmlStringRGB(c)));}
-        void Circle(Vector2 p,float radius,Color c){var old=GUI.color;GUI.color=c;GUI.DrawTexture(new Rect(p.x-radius,p.y-radius,radius*2,radius*2),pixel);GUI.color=old;}
+        void Circle(Vector2 p,float radius,Color c){var old=GUI.color;GUI.color=c;GUI.DrawTexture(new Rect(p.x-radius,p.y-radius,radius*2,radius*2),disc);GUI.color=old;}
         void CircleOutline(Vector2 p,float radius,Color c,float w){Line(p+Vector2.left*radius,p+Vector2.right*radius,c,w);Line(p+Vector2.up*radius,p+Vector2.down*radius,c,w);}
         void Line(Vector2 a,Vector2 b,Color c,float w=1){var old=GUI.color;GUI.color=c;var d=b-a;var m=GUI.matrix;GUIUtility.RotateAroundPivot(Mathf.Atan2(d.y,d.x)*Mathf.Rad2Deg,a);GUI.DrawTexture(new Rect(a.x,a.y,d.magnitude,w),pixel);GUI.matrix=m;GUI.color=old;}
     }
