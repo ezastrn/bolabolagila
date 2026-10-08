@@ -8,7 +8,7 @@ namespace BallClash
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Create()
         {
-            if (Object.FindFirstObjectByType<BallClashGame>() != null) return;
+            if (Object.FindAnyObjectByType<BallClashGame>() != null) return;
             var root = new GameObject("Ball Clash — Ricochet Duel");
             Object.DontDestroyOnLoad(root);
             root.AddComponent<BallClashGame>();

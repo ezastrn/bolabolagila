@@ -21,8 +21,8 @@ namespace BallClash
         Role selectedRole = Role.Fighter;
         int difficulty;
         Phase phase = Phase.Menu;
-        float elapsed, botDecision, botSkillClock, shake;
-        bool aiming, muted, shakeEnabled = true;
+        float elapsed, botDecision, botSkillClock;
+        bool aiming;
         Vector2 aim;
         Texture2D pixel, disc;
         GUIStyle title, heading, normal, small, center, button, selectedButton, hud;
@@ -86,8 +86,23 @@ namespace BallClash
             GUI.Label(new Rect(70,230,560,56), "Pilih bola, tentukan sudut dan power sekali di awal ronde. Setelah dilepas, kontrol berhenti. Bola akan memantul sendiri dan mencoba menemukan lawannya.", normal);
             GUI.Label(new Rect(70,305,420,28), "Pilih Kelas & Kekuatan", heading);
             var roles = new[] { Role.Fighter, Role.Magic, Role.Marksman }; var labels = new[] { "🥊 FIGHTER\nJarak dekat · tahan banting", "✨ MAGIC\nProyektil energi · area control", "🎯 MARKSMAN\nSerangan jauh · cepat" };
-            for (int i=0;i<3;i++) if (GUI.Button(new Rect(70+i*178,342,165,62), labels[i], selectedRole==roles[i]?selectedButton:button)) { selectedRole=roles[i]; if (balls[chosen].Role != selectedRole) foreach(var b in balls.Values) if(b.Role==selectedRole){chosen=b.Id;break;} }
-            int col=0,row=0; foreach(var b in balls.Values) if(b.Role==selectedRole) { var r=new Rect(70+col*178,420+row*78,165,68); if(GUI.Button(r,b.Icon+"  "+b.DisplayName+"\n"+b.Skill,chosen==b.Id?selectedButton:button)) chosen=b.Id; col++; if(col==3){col=0;row++;} }
+            for (int i = 0; i < 3; i++)
+            {
+                if (!GUI.Button(new Rect(70 + i * 178, 342, 165, 62), labels[i], selectedRole == roles[i] ? selectedButton : button)) continue;
+                selectedRole = roles[i];
+                if (balls[chosen].Role == selectedRole) continue;
+                foreach (var candidate in balls.Values)
+                    if (candidate.Role == selectedRole) { chosen = candidate.Id; break; }
+            }
+            int col = 0, row = 0;
+            foreach (var candidate in balls.Values)
+            {
+                if (candidate.Role != selectedRole) continue;
+                var pickRect = new Rect(70 + col * 178, 420 + row * 78, 165, 68);
+                if (GUI.Button(pickRect, candidate.Icon + "  " + candidate.DisplayName + "\n" + candidate.Skill, chosen == candidate.Id ? selectedButton : button)) chosen = candidate.Id;
+                col++;
+                if (col == 3) { col = 0; row++; }
+            }
             GUI.Label(new Rect(70,595,300,28), "Kesulitan Bot", heading);
             string[] levels={"🟢 EASY\nBot asal memakai skill.","🟡 MEDIUM\nBot membaca situasi.","🔴 HARD\nBot mencari timing terbaik."};
             for(int i=0;i<3;i++) if(GUI.Button(new Rect(70+i*178,632,165,55),levels[i],difficulty==i?selectedButton:button))difficulty=i;
